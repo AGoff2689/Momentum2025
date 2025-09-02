@@ -19,7 +19,7 @@ export default function Pricing() {
         One-click checkout with Stripe. Secure and fast.
       </p>
       <div style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "1rem" }}>
-        $—
+        $49.99 + tax
       </div>
       <BuyButton />
     </section>
