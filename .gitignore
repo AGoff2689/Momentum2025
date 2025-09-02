@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -41,6 +42,16 @@ id_*
 *_ed25519
 Chromebook*
 savekey*
+=======
+# env & secrets
+.env*
+# node / next
+node_modules
+.next
+# misc
+.DS_Store
+# never commit SSH keys
+>>>>>>> bc2b305 (Initial commit of Momentum2025 scaffold)
 id_*
 *.pem
 *.ppk

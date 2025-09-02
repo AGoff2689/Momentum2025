@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -28,6 +29,19 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
       </body>
+=======
+import "./globals.css";
+
+export const metadata = {
+  title: "Momentum2025",
+  description: "Operational tools built for your workflow."
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+>>>>>>> bc2b305 (Initial commit of Momentum2025 scaffold)
     </html>
   );
 }
