@@ -41,3 +41,10 @@ id_*
 *_ed25519
 Chromebook*
 savekey*
+id_*
+*.pem
+*.ppk
+*_rsa
+*_ed25519
+Chromebook*
+savekey*
