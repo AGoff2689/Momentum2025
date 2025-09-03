@@ -1,22 +1,18 @@
 "use client";
-
-const NavLink = ({ href, label }: { href: string; label: string }) => (
-  <a className="nav-item" href={href}>{label}</a>
+const Item = ({ href, label, icon }:{ href:string; label:string; icon:string }) => (
+  <a className="nav-item" href={href}><span>{icon}</span><span>{label}</span></a>
 );
-
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <div className="kicker" style={{ marginBottom: ".5rem" }}>Navigation</div>
-      <div className="stack">
-        <NavLink href="/dashboard" label="Dashboard" />
-        <NavLink href="/roadmap" label="Career Roadmap" />
-        <NavLink href="/skills" label="Skills" />
-        <NavLink href="/resume" label="Resume Builder" />
-        <NavLink href="/jobs" label="Job Tracker" />
-        <NavLink href="/networking" label="Networking" />
-        <NavLink href="/analytics" label="Analytics" />
-        <NavLink href="/settings" label="Settings" />
+      <div className="subtle" style={{ marginBottom:".5rem", fontWeight:700 }}>Navigation</div>
+      <div style={{ display:"grid", gap:".4rem" }}>
+        <Item href="/dashboard" label="Overview" icon="📊" />
+        <Item href="/free" label="Free Tools" icon="🧰" />
+        <Item href="/resume" label="Resume" icon="📄" />
+        <Item href="/jobs" label="Job Tracker" icon="🗂️" />
+        <Item href="/analytics" label="Analytics" icon="📈" />
+        <Item href="/settings" label="Settings" icon="⚙️" />
       </div>
     </aside>
   );
