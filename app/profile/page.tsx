@@ -1,4 +1,6 @@
 "use client";
+import "../styles/chat.css";
+
 import { useEffect, useMemo, useState } from "react";
 
 type Profile = {
@@ -105,16 +107,41 @@ export default function ProfilePage() {
         <a className="btn btn-outline" href="/free">Free Tools</a>
       </div>
 
-      {/* Chat-style onboarding */}
-      {!done ? (
-        <section className="card card-lg" style={{ display: "grid", gap: 12 }}>
-          <div style={{ display: "grid", gap: 8 }}>
-            <div className="subtle">AI Career Coach</div>
-            <div style={{ padding: 12, border: "1px solid #e5e7eb", borderRadius: 12, background: "#fff" }}>
-              {questionText}
-              {ask?.placeholder && <div className="subtle" style={{ marginTop: 6 }}>e.g., {ask.placeholder}</div>}
-            </div>
-          </div>
+ {/* Chat bubble display */}
+<section className="card card-lg" style={{ display: "grid", gap: 12 }}>
+  <div className="chat-container">
+    {/* Coach bubble */}
+    <div className="chat-bubble coach">
+      {questionText}
+      {ask?.placeholder && (
+        <div className="subtle" style={{ marginTop: 6 }}>
+          e.g., {ask.placeholder}
+        </div>
+      )}
+    </div>
+
+    {/* User bubble if they’ve typed something */}
+    {input && (
+      <div className="chat-bubble user">
+        {input}
+      </div>
+    )}
+  </div>
+
+  <div style={{ display: "flex", gap: 8 }}>
+    <input
+      className="input"
+      style={{ flex: 1, padding: "10px 12px", borderRadius: 10 }}
+      value={input}
+      onChange={e => setInput(e.target.value)}
+      placeholder={ask?.placeholder || ""}
+      onKeyDown={e => { if (e.key === "Enter") submitAnswer(); }}
+    />
+    <button className="btn btn-primary" onClick={submitAnswer}>Send</button>
+    <button className="btn btn-outline" onClick={() => setIdx(i => i + 1)}>Skip</button>
+  </div>
+</section>
+
 
           <div>
             <input
