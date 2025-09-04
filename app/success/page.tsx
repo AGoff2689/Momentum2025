@@ -1,9 +1,18 @@
-export default function SuccessPage() {
+"use client";
+import { useEffect } from "react";
+
+export default function Success() {
+  useEffect(() => {
+    try { localStorage.setItem("m25:pro","true"); } catch {}
+  }, []);
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "2rem" }}>
-      <div style={{ textAlign: "center" }}>
-        <h1 style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>Thanks for your purchase! 🎉</h1>
-        <p>Check your email for next steps. You can close this page now.</p>
+    <main className="container" style={{ paddingTop: 24 }}>
+      <div className="card card-lg" style={{ textAlign:"center" }}>
+        <h1 className="h2">You're all set 🎉</h1>
+        <p className="subtle">Your Pro access is active. You can manage billing from Stripe’s receipt email.</p>
+        <div style={{ marginTop: 16 }}>
+          <a className="btn btn-primary" href="/dashboard">Go to Dashboard</a>
+        </div>
       </div>
     </main>
   );
