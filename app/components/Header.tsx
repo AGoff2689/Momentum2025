@@ -15,6 +15,7 @@ export default function Header() {
           <a className={active("/free")} href="/free">Free Tools</a>
           <a className={active("/dashboard")} href="/dashboard">Dashboard</a>
           <a className={active("/pricing")} href="/pricing">Pricing</a>
+          <a className={active("/profile")} href="/profile">Profile</a>
           <a className="btn btn-outline" href="/free">Start Free</a>
           <a className="btn btn-primary" href="/pricing">Go Pro</a>
         </nav>
