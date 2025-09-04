@@ -1,0 +1,4 @@
+.chatContainer{display:flex;flex-direction:column;gap:12px}
+.chatBubble{max-width:70%;padding:10px 14px;border-radius:16px;line-height:1.4;font-size:15px}
+.coach{background:#f3f4f6;color:#111827;border-bottom-left-radius:4px;align-self:flex-start}
+.user{background:#2563eb;color:#fff;border-bottom-right-radius:4px;align-self:flex-end}

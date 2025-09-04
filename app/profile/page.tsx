@@ -1,7 +1,6 @@
 "use client";
-import "../styles/chat.css";
-
 import { useEffect, useMemo, useState } from "react";
+import styles from "./chat.module.css";
 
 type Profile = {
   name?: string; email?: string; role?: string; exp?: string; location?: string;
@@ -34,26 +33,24 @@ export default function ProfilePage() {
   const [resumeName, setResumeName] = useState<string | undefined>(undefined);
   const done = idx >= QUESTIONS.length;
 
-  // Load saved profile
+  // Load saved
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const p = JSON.parse(saved) as Profile;
         setProfile(p);
-        // Fast-forward through any already-answered questions
         const next = QUESTIONS.findIndex(q => !p[q.key]);
         setIdx(next === -1 ? QUESTIONS.length : next);
       }
     } catch {}
   }, []);
 
-  // Persist on change
+  // Persist
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); } catch {}
   }, [profile]);
 
-  // Signed-in banner (from saved name/email)
   const signedAs = useMemo(() => {
     if (profile.name && profile.email) return `${profile.name} • ${profile.email}`;
     if (profile.email) return profile.email;
@@ -101,70 +98,44 @@ export default function ProfilePage() {
         <div>
           <strong>Profile</strong>
           <div className="subtle">
-            {signedAs ? <>Signed in as {signedAs}</> : <>Not signed in · answers will be saved on this device</>}
+            {signedAs ? <>Signed in as {signedAs}</> : <>Not signed in · answers saved on this device</>}
           </div>
         </div>
         <a className="btn btn-outline" href="/free">Free Tools</a>
       </div>
 
- {/* Chat bubble display */}
-<section className="card card-lg" style={{ display: "grid", gap: 12 }}>
-  <div className="chat-container">
-    {/* Coach bubble */}
-    <div className="chat-bubble coach">
-      {questionText}
-      {ask?.placeholder && (
-        <div className="subtle" style={{ marginTop: 6 }}>
-          e.g., {ask.placeholder}
-        </div>
-      )}
-    </div>
+      {!done ? (
+        <section className="card card-lg" style={{ display: "grid", gap: 12 }}>
+          <div className={styles.chatContainer}>
+            <div className={`${styles.chatBubble} ${styles.coach}`}>
+              {questionText}
+              {ask?.placeholder && (
+                <div className="subtle" style={{ marginTop: 6 }}>
+                  e.g., {ask.placeholder}
+                </div>
+              )}
+            </div>
 
-    {/* User bubble if they’ve typed something */}
-    {input && (
-      <div className="chat-bubble user">
-        {input}
-      </div>
-    )}
-  </div>
+            {input && (
+              <div className={`${styles.chatBubble} ${styles.user}`}>
+                {input}
+              </div>
+            )}
+          </div>
 
-  <div style={{ display: "flex", gap: 8 }}>
-    <input
-      className="input"
-      style={{ flex: 1, padding: "10px 12px", borderRadius: 10 }}
-      value={input}
-      onChange={e => setInput(e.target.value)}
-      placeholder={ask?.placeholder || ""}
-      onKeyDown={e => { if (e.key === "Enter") submitAnswer(); }}
-    />
-    <button className="btn btn-primary" onClick={submitAnswer}>Send</button>
-    <button className="btn btn-outline" onClick={() => setIdx(i => i + 1)}>Skip</button>
-  </div>
-</section>
-
-
-          <div>
+          <div style={{ display: "flex", gap: 8 }}>
             <input
               className="input"
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #e5e7eb", background: "#fff" }}
+              style={{ flex: 1, padding: "10px 12px", borderRadius: 10 }}
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder={ask?.placeholder || ""}
               onKeyDown={e => { if (e.key === "Enter") submitAnswer(); }}
             />
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button className="btn btn-primary" onClick={submitAnswer}>Send</button>
-              <button
-                className="btn btn-outline"
-                onClick={() => { setInput(""); setIdx(i => i + 1); }}
-                title="Skip this question"
-              >
-                Skip
-              </button>
-            </div>
+            <button className="btn btn-primary" onClick={submitAnswer}>Send</button>
+            <button className="btn btn-outline" onClick={() => setIdx(i => i + 1)}>Skip</button>
           </div>
 
-          {/* Quick resume upload available any time */}
           <div style={{ marginTop: 8 }}>
             <label className="label">Upload resume (PDF/DOC/DOCX)</label>
             <input
@@ -177,7 +148,6 @@ export default function ProfilePage() {
           </div>
         </section>
       ) : (
-        // Summary & plan selection
         <section className="card card-lg" style={{ display: "grid", gap: 16 }}>
           <div className="h2">Review & continue</div>
           <div className="card" style={{ display: "grid", gap: 8 }}>
@@ -223,4 +193,3 @@ function Row({ k, v }: { k: string; v?: string }) {
     </div>
   );
 }
-
