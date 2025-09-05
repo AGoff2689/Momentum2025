@@ -59,3 +59,6 @@ id_*
 *_ed25519
 Chromebook*
 savekey*
+
+# Local Netlify folder
+.netlify

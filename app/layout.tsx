@@ -2,7 +2,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Header from "./components/Header";
 import StartTrial from "./components/StartTrial";
-import TransitionProvider from "./TransitionProvider";
 import TrialBanner from "./components/TrialBanner";
 
 export const metadata = { title:"Momentum2025", description:"Advance your career with AI tools" };
@@ -15,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <StartTrial />
         <Header />
         <TrialBanner />
-        <TransitionProvider>{children}</TransitionProvider>
+        {children}
       </body>
     </html>
   );

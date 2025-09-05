@@ -1,8 +1,6 @@
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
-
-// REPLACE with your real recurring Price ID (test or live)
-const PRICE_ID = "price_XXXXXXXXXXXX";
+const PRICE_ID = "price_XXXXXXXXXXXX"; // <-- replace with your real price id
 
 const ok = (b, c = 200) => ({
   statusCode: c,
@@ -27,7 +25,7 @@ exports.handler = async (event) => {
       line_items: [{ price: PRICE_ID, quantity: 1 }],
       subscription_data: trialDays ? { trial_period_days: trialDays } : undefined,
       success_url: `${base}/success`,
-      cancel_url: `${base}/pricing`,
+      cancel_url: `${base}/pro`,
       allow_promotion_codes: true,
     });
     return ok({ url: session.url });

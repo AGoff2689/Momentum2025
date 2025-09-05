@@ -19,11 +19,9 @@ export default function Header(){
           <strong>Momentum2025</strong>
         </a>
         <nav style={{display:"flex",gap:8,alignItems:"center"}}>
-          <a className={active("/dashboard")} href="/dashboard">Dashboard</a>
-          <a className={active("/coach")} href="/coach">Coach</a>
-          <a className={active("/free")} href="/free">Free</a>
+          <a className={active("/")} href="/">Introduction</a>
           <a className={active("/profile")} href="/profile">Profile</a>
-          <a className={active("/pricing")} href="/pricing">Pricing</a>
+          <a className={active("/pro")} href="/pro">Pro Services</a>
           <span className="badge">{label}</span>
         </nav>
       </div>
