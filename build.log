@@ -1,0 +1,404 @@
+
+> momentum2025@1.0.0 build
+> next build
+
+  ▲ Next.js 14.2.32
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./app/profile/page.tsx
+Error: 
+  [31mx[0m the name `useEffect` is defined multiple times
+    ,-[[36;1;4m/home/adamjgoff/Momentum2025/app/profile/page.tsx[0m:1:1]
+ [2m 1[0m | "use client";
+ [2m 2[0m | import { useEffect, useState } from "react";
+    : [31;1m         ^^^^|^^^^[0m
+    :              [31;1m`-- [31;1mprevious definition of `useEffect` here[0m[0m
+ [2m 3[0m | 
+ [2m 4[0m | export default function ProfilePage() {
+ [2m 5[0m |   const [name, setName] = useState("");
+ [2m 6[0m |   const [role, setRole] = useState("");
+ [2m 7[0m |   const [exp, setExp] = useState("");
+ [2m 8[0m |   const [skills, setSkills] = useState("");
+ [2m 9[0m |   const [location, setLocation] = useState("");
+ [2m10[0m | 
+ [2m11[0m |   useEffect(() => {
+ [2m12[0m |     if (typeof window === "undefined") return;
+ [2m13[0m |     setName(localStorage.getItem("m25:name") || "");
+ [2m14[0m |     setRole(localStorage.getItem("m25:role") || "");
+ [2m15[0m |     setExp(localStorage.getItem("m25:exp") || "");
+ [2m16[0m |     setSkills(localStorage.getItem("m25:skills") || "");
+ [2m17[0m |     setLocation(localStorage.getItem("m25:location") || "");
+ [2m18[0m |   }, []);
+ [2m19[0m | 
+ [2m20[0m |   const save = () => {
+ [2m21[0m |     if (typeof window === "undefined") return;
+ [2m22[0m |     localStorage.setItem("m25:name", name);
+ [2m23[0m |     localStorage.setItem("m25:role", role);
+ [2m24[0m |     localStorage.setItem("m25:exp", exp);
+ [2m25[0m |     localStorage.setItem("m25:skills", skills);
+ [2m26[0m |     localStorage.setItem("m25:location", location);
+ [2m27[0m |     alert("Profile saved ✓");
+ [2m28[0m |   };
+ [2m29[0m | 
+ [2m30[0m |   return (
+ [2m31[0m |     <main className="container" style={{ paddingTop: "1rem" }}>
+ [2m32[0m |       <h1 className="h2" style={{ marginBottom: "1rem" }}>Your Profile</h1>
+ [2m33[0m | 
+ [2m34[0m |       <section className="card card-lg" style={{ maxWidth: 720 }}>
+ [2m35[0m |         <div style={{ display:"grid", gap:"1rem", gridTemplateColumns:"repeat(2,minmax(0,1fr))" }}>
+ [2m36[0m |           <div>
+ [2m37[0m |             <label className="label">Full Name</label>
+ [2m38[0m |             <input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="Jane Doe" />
+ [2m39[0m |           </div>
+ [2m40[0m |           <div>
+ [2m41[0m |             <label className="label">Target Role</label>
+ [2m42[0m |             <input className="input" value={role} onChange={e=>setRole(e.target.value)} placeholder="Product Manager" />
+ [2m43[0m |           </div>
+ [2m44[0m |           <div>
+ [2m45[0m |             <label className="label">Years of Experience</label>
+ [2m46[0m |             <input className="input" value={exp} onChange={e=>setExp(e.target.value)} placeholder="5" />
+ [2m47[0m |           </div>
+ [2m48[0m |           <div>
+ [2m49[0m |             <label className="label">Location</label>
+ [2m50[0m |             <input className="input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="NYC, Remote" />
+ [2m51[0m |           </div>
+ [2m52[0m |           <div style={{ gridColumn: "1 / -1" }}>
+ [2m53[0m |             <label className="label">Key Skills (comma-separated)</label>
+ [2m54[0m |             <input className="input" value={skills} onChange={e=>setSkills(e.target.value)} placeholder="SQL, Python, stakeholder management" />
+ [2m55[0m |           </div>
+ [2m56[0m |         </div>
+ [2m57[0m | 
+ [2m58[0m |         <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
+ [2m59[0m |           <button className="btn btn-primary" onClick={save}>Save Profile</button>
+ [2m60[0m |           <a className="btn btn-outline" href="/free">Go to Free Tools</a>
+ [2m61[0m |         </div>
+ [2m62[0m |       </section>
+ [2m63[0m |     </main>
+ [2m64[0m |   );
+ [2m65[0m | }
+ [2m66[0m | "use client";
+ [2m67[0m | import { useEffect, useState } from "react";
+    : [33;1m         ^^^^|^^^^[0m
+    :              [33;1m`-- [33;1m`useEffect` redefined here[0m[0m
+ [2m68[0m | 
+ [2m69[0m | export default function ProfilePage() {
+ [2m70[0m |   const [name, setName] = useState("");
+    `----
+
+  [31mx[0m the name `useState` is defined multiple times
+    ,-[[36;1;4m/home/adamjgoff/Momentum2025/app/profile/page.tsx[0m:1:1]
+ [2m 1[0m | "use client";
+ [2m 2[0m | import { useEffect, useState } from "react";
+    : [31;1m                    ^^^^|^^^[0m
+    :                         [31;1m`-- [31;1mprevious definition of `useState` here[0m[0m
+ [2m 3[0m | 
+ [2m 4[0m | export default function ProfilePage() {
+ [2m 5[0m |   const [name, setName] = useState("");
+ [2m 6[0m |   const [role, setRole] = useState("");
+ [2m 7[0m |   const [exp, setExp] = useState("");
+ [2m 8[0m |   const [skills, setSkills] = useState("");
+ [2m 9[0m |   const [location, setLocation] = useState("");
+ [2m10[0m | 
+ [2m11[0m |   useEffect(() => {
+ [2m12[0m |     if (typeof window === "undefined") return;
+ [2m13[0m |     setName(localStorage.getItem("m25:name") || "");
+ [2m14[0m |     setRole(localStorage.getItem("m25:role") || "");
+ [2m15[0m |     setExp(localStorage.getItem("m25:exp") || "");
+ [2m16[0m |     setSkills(localStorage.getItem("m25:skills") || "");
+ [2m17[0m |     setLocation(localStorage.getItem("m25:location") || "");
+ [2m18[0m |   }, []);
+ [2m19[0m | 
+ [2m20[0m |   const save = () => {
+ [2m21[0m |     if (typeof window === "undefined") return;
+ [2m22[0m |     localStorage.setItem("m25:name", name);
+ [2m23[0m |     localStorage.setItem("m25:role", role);
+ [2m24[0m |     localStorage.setItem("m25:exp", exp);
+ [2m25[0m |     localStorage.setItem("m25:skills", skills);
+ [2m26[0m |     localStorage.setItem("m25:location", location);
+ [2m27[0m |     alert("Profile saved ✓");
+ [2m28[0m |   };
+ [2m29[0m | 
+ [2m30[0m |   return (
+ [2m31[0m |     <main className="container" style={{ paddingTop: "1rem" }}>
+ [2m32[0m |       <h1 className="h2" style={{ marginBottom: "1rem" }}>Your Profile</h1>
+ [2m33[0m | 
+ [2m34[0m |       <section className="card card-lg" style={{ maxWidth: 720 }}>
+ [2m35[0m |         <div style={{ display:"grid", gap:"1rem", gridTemplateColumns:"repeat(2,minmax(0,1fr))" }}>
+ [2m36[0m |           <div>
+ [2m37[0m |             <label className="label">Full Name</label>
+ [2m38[0m |             <input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="Jane Doe" />
+ [2m39[0m |           </div>
+ [2m40[0m |           <div>
+ [2m41[0m |             <label className="label">Target Role</label>
+ [2m42[0m |             <input className="input" value={role} onChange={e=>setRole(e.target.value)} placeholder="Product Manager" />
+ [2m43[0m |           </div>
+ [2m44[0m |           <div>
+ [2m45[0m |             <label className="label">Years of Experience</label>
+ [2m46[0m |             <input className="input" value={exp} onChange={e=>setExp(e.target.value)} placeholder="5" />
+ [2m47[0m |           </div>
+ [2m48[0m |           <div>
+ [2m49[0m |             <label className="label">Location</label>
+ [2m50[0m |             <input className="input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="NYC, Remote" />
+ [2m51[0m |           </div>
+ [2m52[0m |           <div style={{ gridColumn: "1 / -1" }}>
+ [2m53[0m |             <label className="label">Key Skills (comma-separated)</label>
+ [2m54[0m |             <input className="input" value={skills} onChange={e=>setSkills(e.target.value)} placeholder="SQL, Python, stakeholder management" />
+ [2m55[0m |           </div>
+ [2m56[0m |         </div>
+ [2m57[0m | 
+ [2m58[0m |         <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
+ [2m59[0m |           <button className="btn btn-primary" onClick={save}>Save Profile</button>
+ [2m60[0m |           <a className="btn btn-outline" href="/free">Go to Free Tools</a>
+ [2m61[0m |         </div>
+ [2m62[0m |       </section>
+ [2m63[0m |     </main>
+ [2m64[0m |   );
+ [2m65[0m | }
+ [2m66[0m | "use client";
+ [2m67[0m | import { useEffect, useState } from "react";
+    : [33;1m                    ^^^^|^^^[0m
+    :                         [33;1m`-- [33;1m`useState` redefined here[0m[0m
+ [2m68[0m | 
+ [2m69[0m | export default function ProfilePage() {
+ [2m70[0m |   const [name, setName] = useState("");
+    `----
+
+  [31mx[0m the name `ProfilePage` is defined multiple times
+    ,-[[36;1;4m/home/adamjgoff/Momentum2025/app/profile/page.tsx[0m:1:1]
+ [2m 1[0m | "use client";
+ [2m 2[0m | import { useEffect, useState } from "react";
+ [2m 3[0m | 
+ [2m 4[0m | export default function ProfilePage() {
+    : [31;1m                        ^^^^^|^^^^^[0m
+    :                              [31;1m`-- [31;1mprevious definition of `ProfilePage` here[0m[0m
+ [2m 5[0m |   const [name, setName] = useState("");
+ [2m 6[0m |   const [role, setRole] = useState("");
+ [2m 7[0m |   const [exp, setExp] = useState("");
+ [2m 8[0m |   const [skills, setSkills] = useState("");
+ [2m 9[0m |   const [location, setLocation] = useState("");
+ [2m10[0m | 
+ [2m11[0m |   useEffect(() => {
+ [2m12[0m |     if (typeof window === "undefined") return;
+ [2m13[0m |     setName(localStorage.getItem("m25:name") || "");
+ [2m14[0m |     setRole(localStorage.getItem("m25:role") || "");
+ [2m15[0m |     setExp(localStorage.getItem("m25:exp") || "");
+ [2m16[0m |     setSkills(localStorage.getItem("m25:skills") || "");
+ [2m17[0m |     setLocation(localStorage.getItem("m25:location") || "");
+ [2m18[0m |   }, []);
+ [2m19[0m | 
+ [2m20[0m |   const save = () => {
+ [2m21[0m |     if (typeof window === "undefined") return;
+ [2m22[0m |     localStorage.setItem("m25:name", name);
+ [2m23[0m |     localStorage.setItem("m25:role", role);
+ [2m24[0m |     localStorage.setItem("m25:exp", exp);
+ [2m25[0m |     localStorage.setItem("m25:skills", skills);
+ [2m26[0m |     localStorage.setItem("m25:location", location);
+ [2m27[0m |     alert("Profile saved ✓");
+ [2m28[0m |   };
+ [2m29[0m | 
+ [2m30[0m |   return (
+ [2m31[0m |     <main className="container" style={{ paddingTop: "1rem" }}>
+ [2m32[0m |       <h1 className="h2" style={{ marginBottom: "1rem" }}>Your Profile</h1>
+ [2m33[0m | 
+ [2m34[0m |       <section className="card card-lg" style={{ maxWidth: 720 }}>
+ [2m35[0m |         <div style={{ display:"grid", gap:"1rem", gridTemplateColumns:"repeat(2,minmax(0,1fr))" }}>
+ [2m36[0m |           <div>
+ [2m37[0m |             <label className="label">Full Name</label>
+ [2m38[0m |             <input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="Jane Doe" />
+ [2m39[0m |           </div>
+ [2m40[0m |           <div>
+ [2m41[0m |             <label className="label">Target Role</label>
+ [2m42[0m |             <input className="input" value={role} onChange={e=>setRole(e.target.value)} placeholder="Product Manager" />
+ [2m43[0m |           </div>
+ [2m44[0m |           <div>
+ [2m45[0m |             <label className="label">Years of Experience</label>
+ [2m46[0m |             <input className="input" value={exp} onChange={e=>setExp(e.target.value)} placeholder="5" />
+ [2m47[0m |           </div>
+ [2m48[0m |           <div>
+ [2m49[0m |             <label className="label">Location</label>
+ [2m50[0m |             <input className="input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="NYC, Remote" />
+ [2m51[0m |           </div>
+ [2m52[0m |           <div style={{ gridColumn: "1 / -1" }}>
+ [2m53[0m |             <label className="label">Key Skills (comma-separated)</label>
+ [2m54[0m |             <input className="input" value={skills} onChange={e=>setSkills(e.target.value)} placeholder="SQL, Python, stakeholder management" />
+ [2m55[0m |           </div>
+ [2m56[0m |         </div>
+ [2m57[0m | 
+ [2m58[0m |         <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
+ [2m59[0m |           <button className="btn btn-primary" onClick={save}>Save Profile</button>
+ [2m60[0m |           <a className="btn btn-outline" href="/free">Go to Free Tools</a>
+ [2m61[0m |         </div>
+ [2m62[0m |       </section>
+ [2m63[0m |     </main>
+ [2m64[0m |   );
+ [2m65[0m | }
+ [2m66[0m | "use client";
+ [2m67[0m | import { useEffect, useState } from "react";
+ [2m68[0m | 
+ [2m69[0m | export default function ProfilePage() {
+    : [33;1m                        ^^^^^|^^^^^[0m
+    :                              [33;1m`-- [33;1m`ProfilePage` redefined here[0m[0m
+ [2m70[0m |   const [name, setName] = useState("");
+ [2m71[0m |   const [role, setRole] = useState("");
+ [2m72[0m |   const [exp, setExp] = useState("");
+    `----
+
+  [31mx[0m the name `default` is exported multiple times
+     ,-[[36;1;4m/home/adamjgoff/Momentum2025/app/profile/page.tsx[0m:1:1]
+ [2m  1[0m |     "use client";
+ [2m  2[0m |     import { useEffect, useState } from "react";
+ [2m  3[0m |     
+ [2m  4[0m | [31;1m,[0m[31;1m-[0m[31;1m>[0m export default function ProfilePage() {
+ [2m  5[0m | [31;1m|[0m     const [name, setName] = useState("");
+ [2m  6[0m | [31;1m|[0m     const [role, setRole] = useState("");
+ [2m  7[0m | [31;1m|[0m     const [exp, setExp] = useState("");
+ [2m  8[0m | [31;1m|[0m     const [skills, setSkills] = useState("");
+ [2m  9[0m | [31;1m|[0m     const [location, setLocation] = useState("");
+ [2m 10[0m | [31;1m|[0m   
+ [2m 11[0m | [31;1m|[0m     useEffect(() => {
+ [2m 12[0m | [31;1m|[0m       if (typeof window === "undefined") return;
+ [2m 13[0m | [31;1m|[0m       setName(localStorage.getItem("m25:name") || "");
+ [2m 14[0m | [31;1m|[0m       setRole(localStorage.getItem("m25:role") || "");
+ [2m 15[0m | [31;1m|[0m       setExp(localStorage.getItem("m25:exp") || "");
+ [2m 16[0m | [31;1m|[0m       setSkills(localStorage.getItem("m25:skills") || "");
+ [2m 17[0m | [31;1m|[0m       setLocation(localStorage.getItem("m25:location") || "");
+ [2m 18[0m | [31;1m|[0m     }, []);
+ [2m 19[0m | [31;1m|[0m   
+ [2m 20[0m | [31;1m|[0m     const save = () => {
+ [2m 21[0m | [31;1m|[0m       if (typeof window === "undefined") return;
+ [2m 22[0m | [31;1m|[0m       localStorage.setItem("m25:name", name);
+ [2m 23[0m | [31;1m|[0m       localStorage.setItem("m25:role", role);
+ [2m 24[0m | [31;1m|[0m       localStorage.setItem("m25:exp", exp);
+ [2m 25[0m | [31;1m|[0m       localStorage.setItem("m25:skills", skills);
+ [2m 26[0m | [31;1m|[0m       localStorage.setItem("m25:location", location);
+ [2m 27[0m | [31;1m|[0m       alert("Profile saved ✓");
+ [2m 28[0m | [31;1m|[0m     };
+ [2m 29[0m | [31;1m|[0m   
+ [2m 30[0m | [31;1m|[0m     return (
+ [2m 31[0m | [31;1m|[0m       <main className="container" style={{ paddingTop: "1rem" }}>
+ [2m 32[0m | [31;1m|[0m         <h1 className="h2" style={{ marginBottom: "1rem" }}>Your Profile</h1>
+ [2m 33[0m | [31;1m|[0m   
+ [2m 34[0m | [31;1m|[0m         <section className="card card-lg" style={{ maxWidth: 720 }}>
+ [2m 35[0m | [31;1m|[0m           <div style={{ display:"grid", gap:"1rem", gridTemplateColumns:"repeat(2,minmax(0,1fr))" }}>
+ [2m 36[0m | [31;1m|[0m             <div>
+ [2m 37[0m | [31;1m|[0m               <label className="label">Full Name</label>
+ [2m 38[0m | [31;1m|[0m               <input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="Jane Doe" />
+ [2m 39[0m | [31;1m|[0m             </div>
+ [2m 40[0m | [31;1m|[0m             <div>
+ [2m 41[0m | [31;1m|[0m               <label className="label">Target Role</label>
+ [2m 42[0m | [31;1m|[0m               <input className="input" value={role} onChange={e=>setRole(e.target.value)} placeholder="Product Manager" />
+ [2m 43[0m | [31;1m|[0m             </div>
+ [2m 44[0m | [31;1m|[0m             <div>
+ [2m 45[0m | [31;1m|[0m               <label className="label">Years of Experience</label>
+ [2m 46[0m | [31;1m|[0m               <input className="input" value={exp} onChange={e=>setExp(e.target.value)} placeholder="5" />
+ [2m 47[0m | [31;1m|[0m             </div>
+ [2m 48[0m | [31;1m|[0m             <div>
+ [2m 49[0m | [31;1m|[0m               <label className="label">Location</label>
+ [2m 50[0m | [31;1m|[0m               <input className="input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="NYC, Remote" />
+ [2m 51[0m | [31;1m|[0m             </div>
+ [2m 52[0m | [31;1m|[0m             <div style={{ gridColumn: "1 / -1" }}>
+ [2m 53[0m | [31;1m|[0m               <label className="label">Key Skills (comma-separated)</label>
+ [2m 54[0m | [31;1m|[0m               <input className="input" value={skills} onChange={e=>setSkills(e.target.value)} placeholder="SQL, Python, stakeholder management" />
+ [2m 55[0m | [31;1m|[0m             </div>
+ [2m 56[0m | [31;1m|[0m           </div>
+ [2m 57[0m | [31;1m|[0m   
+ [2m 58[0m | [31;1m|[0m           <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
+ [2m 59[0m | [31;1m|[0m             <button className="btn btn-primary" onClick={save}>Save Profile</button>
+ [2m 60[0m | [31;1m|[0m             <a className="btn btn-outline" href="/free">Go to Free Tools</a>
+ [2m 61[0m | [31;1m|[0m           </div>
+ [2m 62[0m | [31;1m|[0m         </section>
+ [2m 63[0m | [31;1m|[0m       </main>
+ [2m 64[0m | [31;1m|[0m     );
+ [2m 65[0m | [31;1m|[0m[31;1m-[0m[31;1m>[0m }
+     : [31;1m`[0m[31;1m---[0m[31;1m-[0m [31;1mprevious exported here[0m
+ [2m 66[0m |     "use client";
+ [2m 67[0m |     import { useEffect, useState } from "react";
+ [2m 68[0m |     
+ [2m 69[0m | [33;1m,[0m[33;1m-[0m[33;1m>[0m export default function ProfilePage() {
+ [2m 70[0m | [33;1m|[0m     const [name, setName] = useState("");
+ [2m 71[0m | [33;1m|[0m     const [role, setRole] = useState("");
+ [2m 72[0m | [33;1m|[0m     const [exp, setExp] = useState("");
+ [2m 73[0m | [33;1m|[0m     const [skills, setSkills] = useState("");
+ [2m 74[0m | [33;1m|[0m     const [location, setLocation] = useState("");
+ [2m 75[0m | [33;1m|[0m   
+ [2m 76[0m | [33;1m|[0m     useEffect(() => {
+ [2m 77[0m | [33;1m|[0m       if (typeof window === "undefined") return;
+ [2m 78[0m | [33;1m|[0m       setName(localStorage.getItem("m25:name") || "");
+ [2m 79[0m | [33;1m|[0m       setRole(localStorage.getItem("m25:role") || "");
+ [2m 80[0m | [33;1m|[0m       setExp(localStorage.getItem("m25:exp") || "");
+ [2m 81[0m | [33;1m|[0m       setSkills(localStorage.getItem("m25:skills") || "");
+ [2m 82[0m | [33;1m|[0m       setLocation(localStorage.getItem("m25:location") || "");
+ [2m 83[0m | [33;1m|[0m     }, []);
+ [2m 84[0m | [33;1m|[0m   
+ [2m 85[0m | [33;1m|[0m     const save = () => {
+ [2m 86[0m | [33;1m|[0m       if (typeof window === "undefined") return;
+ [2m 87[0m | [33;1m|[0m       localStorage.setItem("m25:name", name);
+ [2m 88[0m | [33;1m|[0m       localStorage.setItem("m25:role", role);
+ [2m 89[0m | [33;1m|[0m       localStorage.setItem("m25:exp", exp);
+ [2m 90[0m | [33;1m|[0m       localStorage.setItem("m25:skills", skills);
+ [2m 91[0m | [33;1m|[0m       localStorage.setItem("m25:location", location);
+ [2m 92[0m | [33;1m|[0m       alert("Profile saved ✓");
+ [2m 93[0m | [33;1m|[0m     };
+ [2m 94[0m | [33;1m|[0m   
+ [2m 95[0m | [33;1m|[0m     return (
+ [2m 96[0m | [33;1m|[0m       <main className="container" style={{ paddingTop: "1rem" }}>
+ [2m 97[0m | [33;1m|[0m         <h1 className="h2" style={{ marginBottom: "1rem" }}>Your Profile</h1>
+ [2m 98[0m | [33;1m|[0m   
+ [2m 99[0m | [33;1m|[0m         <section className="card card-lg" style={{ maxWidth: 720 }}>
+ [2m100[0m | [33;1m|[0m           <div style={{ display:"grid", gap:"1rem", gridTemplateColumns:"repeat(2,minmax(0,1fr))" }}>
+ [2m101[0m | [33;1m|[0m             <div>
+ [2m102[0m | [33;1m|[0m               <label className="label">Full Name</label>
+ [2m103[0m | [33;1m|[0m               <input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="Jane Doe" />
+ [2m104[0m | [33;1m|[0m             </div>
+ [2m105[0m | [33;1m|[0m             <div>
+ [2m106[0m | [33;1m|[0m               <label className="label">Target Role</label>
+ [2m107[0m | [33;1m|[0m               <input className="input" value={role} onChange={e=>setRole(e.target.value)} placeholder="Product Manager" />
+ [2m108[0m | [33;1m|[0m             </div>
+ [2m109[0m | [33;1m|[0m             <div>
+ [2m110[0m | [33;1m|[0m               <label className="label">Years of Experience</label>
+ [2m111[0m | [33;1m|[0m               <input className="input" value={exp} onChange={e=>setExp(e.target.value)} placeholder="5" />
+ [2m112[0m | [33;1m|[0m             </div>
+ [2m113[0m | [33;1m|[0m             <div>
+ [2m114[0m | [33;1m|[0m               <label className="label">Location</label>
+ [2m115[0m | [33;1m|[0m               <input className="input" value={location} onChange={e=>setLocation(e.target.value)} placeholder="NYC, Remote" />
+ [2m116[0m | [33;1m|[0m             </div>
+ [2m117[0m | [33;1m|[0m             <div style={{ gridColumn: "1 / -1" }}>
+ [2m118[0m | [33;1m|[0m               <label className="label">Key Skills (comma-separated)</label>
+ [2m119[0m | [33;1m|[0m               <input className="input" value={skills} onChange={e=>setSkills(e.target.value)} placeholder="SQL, Python, stakeholder management" />
+ [2m120[0m | [33;1m|[0m             </div>
+ [2m121[0m | [33;1m|[0m           </div>
+ [2m122[0m | [33;1m|[0m   
+ [2m123[0m | [33;1m|[0m           <div style={{ display: "flex", gap: ".75rem", marginTop: "1rem" }}>
+ [2m124[0m | [33;1m|[0m             <button className="btn btn-primary" onClick={save}>Save Profile</button>
+ [2m125[0m | [33;1m|[0m             <a className="btn btn-outline" href="/free">Go to Free Tools</a>
+ [2m126[0m | [33;1m|[0m           </div>
+ [2m127[0m | [33;1m|[0m         </section>
+ [2m128[0m | [33;1m|[0m       </main>
+ [2m129[0m | [33;1m|[0m     );
+ [2m130[0m | [33;1m|[0m[33;1m-[0m[33;1m>[0m }
+     : [33;1m`[0m[33;1m---[0m[33;1m-[0m [33;1mexported more than once[0m
+     `----
+
+Error: 
+  [36m>[0m Exported identifiers must be unique
+
+  [31mx[0m The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+    ,-[[36;1;4m/home/adamjgoff/Momentum2025/app/profile/page.tsx[0m:63:1]
+ [2m63[0m |     </main>
+ [2m64[0m |   );
+ [2m65[0m | }
+ [2m66[0m | "use client";
+    : [31;1m^^^^^^^^^^^^^[0m
+ [2m67[0m | import { useEffect, useState } from "react";
+ [2m68[0m | 
+ [2m69[0m | export default function ProfilePage() {
+    `----
+
+Import trace for requested module:
+./app/profile/page.tsx
+
+
+> Build failed because of webpack errors

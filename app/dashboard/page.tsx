@@ -1,54 +1,77 @@
-import { FileCheck2, Briefcase, TrendingUp } from "lucide-react";
+"use client";
+import { useEffect, useState } from "react";
+import ProGate from "../components/ProGate";
 
-const Stat = ({icon, label, value}:{icon:React.ReactNode; label:string; value:string}) => (
-  <div className="card" style={{display:"grid",gap:".4rem",padding:"1.1rem"}}>
-    <div style={{display:"flex",alignItems:"center",gap:".5rem"}}>{icon}<span className="subtle">{label}</span></div>
-    <div className="h2">{value}</div>
-  </div>
-);
+type Prefs = { order: string[]; hidden: string[] };
+const KEY = "m25:dashPrefs";
+const DEFAULT_ORDER = ["week","goals","proInsights","coachQuick","jobs"];
 
-export default function DashboardPage() {
+function usePrefs(){
+  const [prefs,setPrefs]=useState<Prefs>({order:DEFAULT_ORDER, hidden:[]});
+  useEffect(()=>{ try{ const p=localStorage.getItem(KEY); if(p) setPrefs(JSON.parse(p)); }catch{} },[]);
+  useEffect(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(prefs)); }catch{} },[prefs]);
+  const toggleHide = (id:string)=> setPrefs(p=>({
+    ...p, hidden: p.hidden.includes(id) ? p.hidden.filter(x=>x!==id) : [...p.hidden,id]
+  }));
+  const move = (id:string, dir:-1|1)=> setPrefs(p=>{
+    const arr=[...p.order]; const i=arr.indexOf(id); if(i===-1) return p;
+    const j=i+dir; if(j<0||j>=arr.length) return p;
+    const tmp=arr[i]; arr[i]=arr[j]; arr[j]=tmp; return {...p, order:arr};
+  });
+  return { prefs, toggleHide, move };
+}
+
+export default function Dashboard(){
+  const { prefs, toggleHide, move } = usePrefs();
+
+  const cards: Record<string, JSX.Element> = {
+    week: (
+      <div className="card card-lg"><h2 className="h2">Your week</h2><p className="subtle">Weekly plan preview.</p></div>
+    ),
+    goals: (
+      <div className="card card-lg"><h2 className="h2">Goals</h2><p className="subtle">Target roles, companies, daily quotas.</p></div>
+    ),
+    proInsights: (
+      <ProGate>
+        <div className="card card-lg"><h2 className="h2">Pro Insights</h2><p className="subtle">ATS scan, skills gap, targets.</p></div>
+      </ProGate>
+    ),
+    coachQuick: (
+      <div className="card card-lg">
+        <h2 className="h2">Coach shortcuts</h2>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <a className="btn btn-outline" href="/coach">7-day plan</a>
+          <a className="btn btn-outline" href="/coach">Resume bullet</a>
+          <a className="btn btn-outline" href="/coach">Interview Qs</a>
+        </div>
+      </div>
+    ),
+    jobs: (
+      <div className="card card-lg"><h2 className="h2">Jobs tracker</h2><p className="subtle">Saved roles and follow-ups.</p></div>
+    ),
+  };
+
   return (
-    <main className="container" style={{display:"grid",gridTemplateColumns:"260px 1fr",gap:"1.25rem",paddingTop:"1rem"}}>
-      <aside className="sidebar">
-        <div className="subtle" style={{marginBottom:".5rem",fontWeight:700}}>Navigation</div>
-        <div style={{display:"grid",gap:".4rem"}}>
-          <a className="nav-item" href="/dashboard">Overview</a>
-          <a className="nav-item" href="/free">Free Tools</a>
-          <a className="nav-item" href="/pricing">Upgrade</a>
-        </div>
-      </aside>
-
-      <section style={{display:"grid",gap:"1.25rem"}}>
-        {/* Stats */}
-        <div style={{display:"grid",gap:"1rem",gridTemplateColumns:"repeat(3,minmax(0,1fr))"}}>
-          <Stat icon={<FileCheck2 size={18}/>} label="Resume Score" value="86" />
-          <Stat icon={<Briefcase size={18}/>} label="Applications" value="12" />
-          <Stat icon={<TrendingUp size={18}/>} label="Interview Rate" value="25%" />
-        </div>
-
-        {/* Two-column content */}
-        <div style={{display:"grid",gap:"1rem",gridTemplateColumns:"1fr 1fr"}}>
-          <div className="card card-lg">
-            <div className="h2" style={{marginBottom:".6rem"}}>Learning Recommendations</div>
-            <div style={{display:"grid",gap:".75rem"}}>
-              <div className="card"><strong>SQL for Analysts</strong><div className="subtle">LinkedIn Learning · 3h</div><span className="badge">Recommended</span></div>
-              <div className="card"><strong>Product Sense Interview Prep</strong><div className="subtle">Coursera · 6h</div></div>
+    <main className="container" style={{paddingTop:12}}>
+      <div className="card card-lg" style={{marginBottom:12}}>
+        <strong>Customize dashboard</strong>
+        <div className="subtle" style={{marginTop:6}}>Show/hide and reorder sections. Saved automatically.</div>
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:10}}>
+          {DEFAULT_ORDER.map(id=>(
+            <div key={id} className="badge" style={{display:"flex",alignItems:"center",gap:8}}>
+              <span>{id}</span>
+              <button className="btn btn-outline" onClick={()=>move(id,-1)}>↑</button>
+              <button className="btn btn-outline" onClick={()=>move(id, 1)}>↓</button>
+              <button className="btn btn-outline" onClick={()=>toggleHide(id)}>
+                {prefs.hidden.includes(id)?"Show":"Hide"}
+              </button>
             </div>
-          </div>
-
-          <div className="card card-lg">
-            <div className="h2" style={{marginBottom:".6rem"}}>Job Applications</div>
-            <table className="table">
-              <thead><tr><th>Role</th><th>Company</th><th>Stage</th><th>Updated</th></tr></thead>
-              <tbody>
-                <tr><td>Product Manager</td><td>Acme</td><td><span className="badge">Applied</span></td><td className="subtle">today</td></tr>
-                <tr><td>Data Analyst</td><td>Northwind</td><td><span className="badge">Interview</span></td><td className="subtle">yesterday</td></tr>
-              </tbody>
-            </table>
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
+      <div className="grid-2">
+        {prefs.order.filter(id=>!prefs.hidden.includes(id)).map(id => <div key={id}>{cards[id]}</div>)}
+      </div>
     </main>
   );
 }
