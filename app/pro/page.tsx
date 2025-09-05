@@ -6,8 +6,8 @@ export default function ProServices(){
   return (
     <main className="container" style={{paddingTop:12}}>
       <h1 className="h2" style={{marginBottom:12}}>Pro Services</h1>
-
       <div className="grid-2">
+
         <ProGate title="ATS Resume Scan">
           <div className="card card-lg">
             <strong>ATS Resume Scan</strong>
@@ -39,6 +39,7 @@ export default function ProServices(){
             <button className="btn btn-outline" onClick={stub("Create prompts pack")}>Get prompts</button>
           </div>
         </ProGate>
+
       </div>
     </main>
   );
