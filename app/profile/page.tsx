@@ -1,195 +1,189 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import styles from "./chat.module.css";
+import { extractFromText } from "../lib/extract";
 
-type Profile = {
-  name?: string; email?: string; role?: string; exp?: string; location?: string;
-  education?: string; skills?: string; industries?: string; salary?: string; status?: string;
-  workType?: string; resumeName?: string;
+type Q = {
+  id: string;
+  label: string;
+  type: "text"|"select"|"multiselect"|"number";
+  options?: string[];
+  placeholder?: string;
+  required?: boolean;
+  storageKey: string;
 };
-type Q = { key: keyof Profile; prompt: string; placeholder?: string };
 
-const STORAGE_KEY = "m25:profile";
-
+const KEY_PREFIX = "m25:";
 const QUESTIONS: Q[] = [
-  { key: "name",       prompt: "What’s your full name?",            placeholder: "Jane Doe" },
-  { key: "email",      prompt: "What’s your email address?",        placeholder: "jane@example.com" },
-  { key: "role",       prompt: "What’s your target role/title?",    placeholder: "Product Manager" },
-  { key: "exp",        prompt: "How many years of experience?",     placeholder: "5" },
-  { key: "location",   prompt: "Where do you prefer to work?",      placeholder: "NYC · Remote · Hybrid · Onsite" },
-  { key: "workType",   prompt: "Preferred work type?",              placeholder: "Remote / Hybrid / Onsite" },
-  { key: "education",  prompt: "Highest education?",                placeholder: "BS CS, MBA, etc." },
-  { key: "skills",     prompt: "Top 5 skills (comma-separated)?",   placeholder: "SQL, Python, stakeholder mgmt" },
-  { key: "industries", prompt: "Preferred industries?",             placeholder: "Fintech, Healthcare, AI" },
-  { key: "salary",     prompt: "Desired salary range?",             placeholder: "$120k–$150k" },
-  { key: "status",     prompt: "Current job search status?",        placeholder: "Exploring / Applying / Interviewing" },
+  // ---- General & constraints (before career) ----
+  { id:"name", label:"Your name", type:"text", placeholder:"Jane Doe", required:true, storageKey:`${KEY_PREFIX}name` },
+  { id:"timezone", label:"Time zone", type:"select", options:["ET","CT","MT","PT","GMT","CET","IST","AEST"], storageKey:`${KEY_PREFIX}tz` },
+  { id:"availability", label:"Weekly availability (hrs)", type:"number", placeholder:"8", storageKey:`${KEY_PREFIX}avail` },
+  { id:"workAuth", label:"Work authorization", type:"select", options:["US Citizen/PR","Visa (H1B/Other)","Not applicable"], storageKey:`${KEY_PREFIX}workAuth` },
+  { id:"constraints", label:"Constraints", type:"multiselect", options:["Caregiving","School","Commute","Health","Multiple jobs","None"], storageKey:`${KEY_PREFIX}constraints` },
+  { id:"learning", label:"Learning style", type:"select", options:["Hands-on projects","Reading/docs","Video courses","Pairing/mentorship"], storageKey:`${KEY_PREFIX}learning` },
+  // ---- Career target ----
+  { id:"targetRole", label:"Target role", type:"text", placeholder:"Product Manager", required:true, storageKey:`${KEY_PREFIX}role` },
+  { id:"industry", label:"Industry focus", type:"text", placeholder:"Fintech, healthcare, etc.", storageKey:`${KEY_PREFIX}industry` },
+  { id:"location", label:"Preferred location", type:"text", placeholder:"NYC, Remote", storageKey:`${KEY_PREFIX}location` },
+  { id:"yearsExp", label:"Years of experience", type:"number", placeholder:"5", storageKey:`${KEY_PREFIX}yearsExp` },
+  { id:"topSkills", label:"Your top 5 skills", type:"text", placeholder:"SQL, stakeholder mgmt, A/B testing...", storageKey:`${KEY_PREFIX}skills` },
 ];
 
-export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile>({});
-  const [idx, setIdx] = useState(0);
-  const [input, setInput] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [resumeName, setResumeName] = useState<string | undefined>(undefined);
-  const done = idx >= QUESTIONS.length;
+function useLocal<T>(key: string, initial: T){
+  const [val,setVal] = useState<T>(initial as T);
+  useEffect(()=>{ try{ const v=localStorage.getItem(key); if(v!=null) setVal(JSON.parse(v)); }catch{} },[key]);
+  useEffect(()=>{ try{ localStorage.setItem(key, JSON.stringify(val)); }catch{} },[key,val]);
+  return [val,setVal] as const;
+}
 
-  // Load saved
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved) as Profile;
-        setProfile(p);
-        const next = QUESTIONS.findIndex(q => !p[q.key]);
-        setIdx(next === -1 ? QUESTIONS.length : next);
-      }
-    } catch {}
-  }, []);
+export default function ProfilePage(){
+  // track step
+  const [step, setStep] = useLocal<number>(`${KEY_PREFIX}profileStep`, 0);
+  // store answers map
+  const [answers, setAnswers] = useLocal<Record<string, any>>(`${KEY_PREFIX}profile`, {});
 
-  // Persist
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); } catch {}
-  }, [profile]);
+  // resume text & extraction
+  const [resumeText, setResumeText] = useLocal<string>(`${KEY_PREFIX}resumeText`, "");
+  const [resumeExtract, setResumeExtract] = useLocal<{skills:string[];education?:string;years?:number}>(`${KEY_PREFIX}resumeExtract`, { skills: [] });
 
-  const signedAs = useMemo(() => {
-    if (profile.name && profile.email) return `${profile.name} • ${profile.email}`;
-    if (profile.email) return profile.email;
-    if (profile.name) return profile.name;
-    return null;
-  }, [profile]);
+  const current = useMemo(()=>QUESTIONS[step], [step]);
 
-  const ask = QUESTIONS[idx];
-  const questionText = ask ? ask.prompt : "All set! Review below and continue.";
-
-  const submitAnswer = () => {
-    if (!ask) return;
-    const value = input.trim();
-    if (!value) return;
-    setProfile(p => ({ ...p, [ask.key]: value }));
-    setInput("");
-    setIdx(i => i + 1);
+  const setAnswer = (id: string, v: any) => {
+    setAnswers(a => ({ ...a, [id]: v }));
   };
 
-  const onResume = (file?: File) => {
-    if (!file) return;
-    setResumeName(file.name);
-    setProfile(p => ({ ...p, resumeName: file.name }));
+  const onNext = () => {
+    if (step < QUESTIONS.length - 1) setStep(step + 1);
+  };
+  const onBack = () => {
+    if (step > 0) setStep(step - 1);
   };
 
-  const startProTrial = async () => {
-    try {
-      setBusy(true);
-      const res = await fetch("/.netlify/functions/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "subscription", trialDays: 3 })
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else alert("Could not start trial. Please try again.");
-    } finally {
-      setBusy(false);
+  const onExtract = () => {
+    const data = extractFromText(resumeText || "");
+    setResumeExtract(data);
+    // Merge inferred values into answers if empty
+    setAnswers(a => ({
+      ...a,
+      yearsExp: a.yearsExp ?? data.years,
+      topSkills: a.topSkills || (data.skills?.join(", ") || "")
+    }));
+    alert("Resume text scanned ✓ (locally)");
+  };
+
+  // simple field components
+  const Field = ({ q }: { q: Q }) => {
+    const v = answers[q.id] ?? (q.type==="multiselect" ? [] : "");
+    if (q.type === "select") {
+      return (
+        <select className="input" value={v || ""} onChange={e=>setAnswer(q.id, e.target.value)}>
+          <option value="">Select…</option>
+          {q.options?.map(op => <option key={op} value={op}>{op}</option>)}
+        </select>
+      );
     }
+    if (q.type === "multiselect") {
+      return (
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {q.options?.map(op => {
+            const picked = Array.isArray(v) && v.includes(op);
+            return (
+              <button
+                key={op}
+                className="btn btn-outline"
+                onClick={(e)=>{ e.preventDefault(); 
+                  const cur = Array.isArray(v) ? v : [];
+                  setAnswer(q.id, picked ? cur.filter((x:string)=>x!==op) : [...cur, op]);
+                }}
+              >
+                {picked ? "✓ " : ""}{op}
+              </button>
+            );
+          })}
+        </div>
+      );
+    }
+    if (q.type === "number") {
+      return (
+        <input
+          className="input"
+          type="number"
+          inputMode="numeric"
+          placeholder={q.placeholder}
+          value={v ?? ""}
+          onChange={e=>setAnswer(q.id, e.target.value === "" ? "" : Number(e.target.value))}
+        />
+      );
+    }
+    return (
+      <input
+        className="input"
+        placeholder={q.placeholder}
+        value={v ?? ""}
+        onChange={e=>setAnswer(q.id, e.target.value)}
+      />
+    );
   };
 
   return (
     <main className="container" style={{ paddingTop: 16, maxWidth: 900 }}>
-      <div className="card" style={{ marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      {/* Header card */}
+      <div className="card card-lg" style={{ marginBottom: 12, display:"flex",justifyContent:"space-between",alignItems:"center" }}>
         <div>
-          <strong>Profile</strong>
-          <div className="subtle">
-            {signedAs ? <>Signed in as {signedAs}</> : <>Not signed in · answers saved on this device</>}
-          </div>
+          <strong>Welcome{answers.name ? `, ${answers.name}` : ""}</strong>
+          <div className="subtle">We’ll ask key questions first—career details come next. Everything saves automatically.</div>
         </div>
-        <a className="btn btn-outline" href="/free">Free Tools</a>
+        <a className="btn btn-outline" href="/pro">Pro Services</a>
       </div>
 
-      {!done ? (
-        <section className="card card-lg" style={{ display: "grid", gap: 12 }}>
-          <div className={styles.chatContainer}>
-            <div className={`${styles.chatBubble} ${styles.coach}`}>
-              {questionText}
-              {ask?.placeholder && (
-                <div className="subtle" style={{ marginTop: 6 }}>
-                  e.g., {ask.placeholder}
-                </div>
-              )}
-            </div>
+      {/* Question stepper */}
+      <section className="card card-lg" style={{ marginBottom: 12 }}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <div><strong>Step {step+1} of {QUESTIONS.length}</strong></div>
+          <div className="subtle">{current?.label}</div>
+        </div>
 
-            {input && (
-              <div className={`${styles.chatBubble} ${styles.user}`}>
-                {input}
-              </div>
-            )}
-          </div>
+        <div style={{display:"grid",gap:12}}>
+          <label className="label">{current?.label}</label>
+          <Field q={current} />
+        </div>
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <input
-              className="input"
-              style={{ flex: 1, padding: "10px 12px", borderRadius: 10 }}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder={ask?.placeholder || ""}
-              onKeyDown={e => { if (e.key === "Enter") submitAnswer(); }}
-            />
-            <button className="btn btn-primary" onClick={submitAnswer}>Send</button>
-            <button className="btn btn-outline" onClick={() => setIdx(i => i + 1)}>Skip</button>
-          </div>
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button className="btn btn-outline" onClick={onBack} disabled={step===0}>Back</button>
+          <button className="btn btn-primary" onClick={onNext} disabled={step>=QUESTIONS.length-1}>Next</button>
+          {step>=QUESTIONS.length-1 && (
+            <a className="btn btn-outline" href="/pro">Continue to Pro Services</a>
+          )}
+        </div>
+      </section>
 
-          <div style={{ marginTop: 8 }}>
-            <label className="label">Upload resume (PDF/DOC/DOCX)</label>
-            <input
-              className="input"
-              type="file"
-              accept=".pdf,.doc,.docx"
-              onChange={e => onResume(e.target.files?.[0] || undefined)}
-            />
-            {resumeName && <div className="subtle" style={{ marginTop: 6 }}>Selected: {resumeName}</div>}
-          </div>
-        </section>
-      ) : (
-        <section className="card card-lg" style={{ display: "grid", gap: 16 }}>
-          <div className="h2">Review & continue</div>
-          <div className="card" style={{ display: "grid", gap: 8 }}>
-            <Row k="Name" v={profile.name} />
-            <Row k="Email" v={profile.email} />
-            <Row k="Target role" v={profile.role} />
-            <Row k="Experience (yrs)" v={profile.exp} />
-            <Row k="Location" v={profile.location} />
-            <Row k="Work type" v={profile.workType} />
-            <Row k="Education" v={profile.education} />
-            <Row k="Skills" v={profile.skills} />
-            <Row k="Industries" v={profile.industries} />
-            <Row k="Salary" v={profile.salary} />
-            <Row k="Status" v={profile.status} />
-            <Row k="Resume" v={profile.resumeName} />
-          </div>
+      {/* Optional resume paste */}
+      <section className="card card-lg">
+        <strong>Optional: paste your resume text</strong>
+        <div className="subtle" style={{marginTop:6}}>If you paste resume text, we’ll try to infer skills, education, and years of experience locally (no upload).</div>
+        <textarea
+          className="textarea"
+          placeholder="Paste resume text here (optional)…"
+          value={resumeText}
+          onChange={e=>setResumeText(e.target.value)}
+          style={{marginTop:10}}
+        />
+        <div style={{display:"flex",gap:8,marginTop:10}}>
+          <button className="btn btn-outline" onClick={onExtract}>Scan resume text</button>
+          <a className="btn btn-primary" href="/pro">Go to Pro Services</a>
+        </div>
 
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button
-              className="btn btn-outline"
-              onClick={() => {
-                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); alert("Profile saved ✓"); } catch {}
-              }}
-            >
-              Save
-            </button>
-            <a className="btn btn-outline" href="/free">Continue Free</a>
-            <button className="btn btn-primary" onClick={startProTrial} disabled={busy}>
-              {busy ? "Starting trial…" : "Start 3-day Pro Trial"}
-            </button>
+        {(resumeExtract?.skills?.length || resumeExtract.education || resumeExtract.years) && (
+          <div style={{marginTop:12}}>
+            <div className="subtle">Detected:</div>
+            <ul style={{lineHeight:1.6}}>
+              {resumeExtract.education && <li><strong>Education:</strong> {resumeExtract.education}</li>}
+              {typeof resumeExtract.years === "number" && <li><strong>Years of experience:</strong> {resumeExtract.years}</li>}
+              {resumeExtract.skills?.length ? <li><strong>Skills:</strong> {resumeExtract.skills.join(", ")}</li> : null}
+            </ul>
           </div>
-        </section>
-      )}
+        )}
+      </section>
     </main>
-  );
-}
-
-function Row({ k, v }: { k: string; v?: string }) {
-  return (
-    <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
-      <span className="subtle">{k}</span>
-      <span>{v || <em className="subtle">—</em>}</span>
-    </div>
   );
 }
