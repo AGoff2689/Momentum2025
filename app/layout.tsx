@@ -1,20 +1,24 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
-import Header from "./components/Header";
-import StartTrial from "./components/StartTrial";
-import TrialBanner from "./components/TrialBanner";
+import "../styles/theme.css";
+import type { Metadata } from "next";
+import Sidebar from "./components/Sidebar";
 
-export const metadata = { title:"Momentum2025", description:"Advance your career with AI tools" };
-const inter = Inter({ subsets:["latin"], variable:"--font-body" });
+export const metadata: Metadata = {
+  title: "Momentum2025",
+  description: "Advance your career with AI-powered coaching.",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>
-        <StartTrial />
-        <Header />
-        <TrialBanner />
-        {children}
+      <body>
+        <div className="app-shell">
+          <Sidebar />
+          <div className="content">
+            <div className="content-inner">
+              {children}
+            </div>
+          </div>
+        </div>
       </body>
     </html>
   );

@@ -1,45 +1,29 @@
-"use client";
-import ProGate from "../components/ProGate";
-
 export default function ProServices(){
-  const stub = (msg:string)=>()=>alert(msg + " (stub)");
+  const stub = (m:string)=>()=>alert(m+" (stub)");
   return (
-    <main className="container" style={{paddingTop:12}}>
+    <main>
       <h1 className="h2" style={{marginBottom:12}}>Pro Services</h1>
       <div className="grid-2">
-
-        <ProGate title="ATS Resume Scan">
-          <div className="card card-lg">
-            <strong>ATS Resume Scan</strong>
-            <p className="subtle">Upload your resume to get ATS score and improvement tips.</p>
-            <button className="btn btn-outline" onClick={stub("Open file picker")}>Upload resume</button>
-          </div>
-        </ProGate>
-
-        <ProGate title="Skills Gap & Role Targeting">
-          <div className="card card-lg">
-            <strong>Skills Gap & Role Targeting</strong>
-            <p className="subtle">Identify gaps vs. target roles; get a weekly plan.</p>
-            <button className="btn btn-outline" onClick={stub("Analyze profile data")}>Analyze profile</button>
-          </div>
-        </ProGate>
-
-        <ProGate title="Personalized Outreach Scripts">
-          <div className="card card-lg">
-            <strong>Personalized Outreach Scripts</strong>
-            <p className="subtle">Recruiter & hiring manager messages, tailored to your profile.</p>
-            <button className="btn btn-outline" onClick={stub("Generate outreach scripts")}>Generate scripts</button>
-          </div>
-        </ProGate>
-
-        <ProGate title="Portfolio & Case Prompts">
-          <div className="card card-lg">
-            <strong>Portfolio & Case Prompts</strong>
-            <p className="subtle">Role-specific prompts and practice cases to showcase skills.</p>
-            <button className="btn btn-outline" onClick={stub("Create prompts pack")}>Get prompts</button>
-          </div>
-        </ProGate>
-
+        <div className="card card-lg">
+          <strong>ATS Resume Scan</strong>
+          <div className="subtle" style={{marginTop:6}}>Upload your resume to get ATS score & tips.</div>
+          <button className="btn btn-outline" onClick={stub("Open file picker")}>Upload resume</button>
+        </div>
+        <div className="card card-lg">
+          <strong>Skills Gap Analysis</strong>
+          <div className="subtle" style={{marginTop:6}}>Identify gaps vs. target roles; get weekly plan.</div>
+          <button className="btn btn-outline" onClick={stub("Analyze profile")}>Analyze profile</button>
+        </div>
+        <div className="card card-lg">
+          <strong>Outreach Script Generator</strong>
+          <div className="subtle" style={{marginTop:6}}>Tailored messages for recruiters & managers.</div>
+          <button className="btn btn-outline" onClick={stub("Generate scripts")}>Generate scripts</button>
+        </div>
+        <div className="card card-lg">
+          <strong>Portfolio & Case Prompts</strong>
+          <div className="subtle" style={{marginTop:6}}>Role-specific prompts and practice cases.</div>
+          <button className="btn btn-outline" onClick={stub("Get prompts")}>Get prompts</button>
+        </div>
       </div>
     </main>
   );
