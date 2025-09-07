@@ -1,3 +1,5 @@
+"use client";
+
 export default function ProServices(){
   const stub = (m:string)=>()=>alert(m+" (stub)");
   return (

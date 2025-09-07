@@ -1,3 +1,5 @@
+"use client";
+
 export default function Dashboard(){
   const stub = (m:string)=>()=>alert(m+" (stub)");
   return (
