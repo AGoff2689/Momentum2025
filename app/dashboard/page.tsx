@@ -1,8 +1,7 @@
 "use client";
+import Link from "next/link";
 
 export default function Dashboard(){
-  const stub = (m:string)=>()=>alert(m+" (stub)");
-
   return (
     <main>
       <h1 className="h2" style={{marginBottom:12}}>Dashboard</h1>
@@ -27,13 +26,13 @@ export default function Dashboard(){
         <div className="card card-lg">
           <strong>Reminders</strong>
           <div className="subtle" style={{marginTop:8}}>Calendar sync (Pro)</div>
-          <button className="btn btn-outline" onClick={stub("Connect calendar")}>Connect calendar</button>
+          <Link className="btn btn-outline" href="/pro#calendar">Connect calendar</Link>
         </div>
 
         <div className="card card-lg">
           <strong>Career Insights</strong>
           <div className="subtle" style={{marginTop:8}}>Top skills for your target role this month.</div>
-          <button className="btn btn-outline" onClick={stub("Open insights")}>Open insights</button>
+          <Link className="btn btn-outline" href="/pro#insights">Open insights</Link>
         </div>
       </div>
     </main>
