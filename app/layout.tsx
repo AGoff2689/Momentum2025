@@ -14,9 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="app-shell">
           <Sidebar />
           <div className="content">
-            <div className="content-inner">
-              {children}
-            </div>
+            <div className="content-inner">{children}</div>
           </div>
         </div>
       </body>
