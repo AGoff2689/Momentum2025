@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import StartTrial from "../components/StartTrial";
 
 type QAState = { answers: Record<string,string> };
 type ChatMsg = { role: "assistant" | "user"; text: string };
@@ -121,7 +120,6 @@ export default function ProfileAI(){
 
   return (
     <main className="container" style={{ maxWidth: 920 }}>
-      <StartTrial />
       <h1 className="h2" style={{ marginBottom: 10 }}>Profile</h1>
       <section className="card card-lg" style={{ marginBottom: 12 }}>
         <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:10, flexWrap:"wrap" }}>
