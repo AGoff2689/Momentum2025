@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-// Force Node runtime (needed for Buffer + libraries)
-export const runtime = "nodejs";
+export const runtime = "nodejs"; // for Buffer + native libs
 
 export async function POST(req: Request) {
   try {
@@ -13,30 +12,24 @@ export async function POST(req: Request) {
     const name = (f.name || "").toLowerCase();
     const type = (f.type || "").toLowerCase();
 
-    // .txt
+    // TXT
     if (name.endsWith(".txt") || type.includes("text/plain")) {
-      const text = buf.toString("utf8");
-      return NextResponse.json({ text });
+      return NextResponse.json({ text: buf.toString("utf8") });
     }
-
-    // .docx
+    // DOCX
     if (name.endsWith(".docx") || type.includes("officedocument.wordprocessingml.document")) {
       const mammoth = await import("mammoth");
       const { value } = await mammoth.extractRawText({ buffer: buf });
-      const text = (value || "").replace(/\s+\n/g, "\n").trim();
-      return NextResponse.json({ text });
+      return NextResponse.json({ text: (value || "").replace(/\s+\n/g, "\n").trim() });
     }
-
-    // .pdf
+    // PDF
     if (name.endsWith(".pdf") || type.includes("pdf")) {
       const pdfParse = (await import("pdf-parse")).default;
       const result = await pdfParse(buf);
-      const text = (result.text || "").replace(/\s+\n/g, "\n").trim();
-      return NextResponse.json({ text });
+      return NextResponse.json({ text: (result.text || "").replace(/\s+\n/g, "\n").trim() });
     }
-
     return NextResponse.json({ error: "unsupported_type" }, { status: 415 });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "parse_failed" }, { status: 200 });
   }
 }

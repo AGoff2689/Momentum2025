@@ -1,19 +1,21 @@
-const KEY_START = "m25:trialStart";
-const KEY_PRO   = "m25:pro";
-const TRIAL_DAYS = 3;
+const KEY_START = "m25:trial:start";
+const KEY_DISABLED = "m25:trial:disabled";
 
-export function isPro(): boolean {
-  try { return localStorage.getItem(KEY_PRO) === "true"; } catch { return false; }
+export type TrialStatus = { state:"pro"; daysLeft:number } | { state:"free" };
+
+export function startTrialIfNeeded(days=3){
+  if (typeof window==="undefined") return;
+  if (localStorage.getItem(KEY_DISABLED)) return;
+  if (!localStorage.getItem(KEY_START)) localStorage.setItem(KEY_START, Date.now().toString());
 }
-export function startTrialIfNeeded(): void {
-  try { if (!localStorage.getItem(KEY_START)) localStorage.setItem(KEY_START, new Date().toISOString()); } catch {}
+export function disableTrial(){ if (typeof window!=="undefined") localStorage.setItem(KEY_DISABLED,"1"); }
+export function trialStatus(days=3): TrialStatus {
+  if (typeof window==="undefined") return { state:"free" };
+  if (localStorage.getItem(KEY_DISABLED)) return { state:"free" };
+  const start = parseInt(localStorage.getItem(KEY_START) || "0", 10);
+  if (!start) return { state:"free" };
+  const daysUsed = Math.floor((Date.now()-start)/(24*60*60*1000));
+  const left = Math.max(0, days - daysUsed);
+  return left>0 ? { state:"pro", daysLeft:left } : { state:"free" };
 }
-export function trialStatus(): { active: boolean; remainingDays: number } {
-  try {
-    if (isPro()) return { active: true, remainingDays: TRIAL_DAYS };
-    const iso = localStorage.getItem(KEY_START); if (!iso) return { active: false, remainingDays: 0 };
-    const days = (Date.now() - new Date(iso).getTime()) / 86400000;
-    const remaining = Math.ceil(TRIAL_DAYS - days);
-    return { active: days < TRIAL_DAYS, remainingDays: Math.max(0, remaining) };
-  } catch { return { active: false, remainingDays: 0 }; }
-}
+export const isProUnlocked = (days=3) => trialStatus(days).state==="pro";
