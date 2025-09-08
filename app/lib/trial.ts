@@ -1,6 +1,5 @@
 const KEY_START = "m25:trial:start";
 const KEY_DISABLED = "m25:trial:disabled";
-
 export type TrialStatus = { state:"pro"; daysLeft:number } | { state:"free" };
 
 export function startTrialIfNeeded(days=3){

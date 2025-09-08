@@ -11,6 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <StartTrial />
         <div className="app-shell">
           <Sidebar />
           <div className="content">

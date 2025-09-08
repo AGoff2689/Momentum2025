@@ -28,8 +28,8 @@ export default function ProfileAI(){
   },[]);
   useEffect(()=>{ localStorage.setItem("m25:profile", JSON.stringify(state)); },[state]);
 
-  function appendAssistant(text: string){ setChat(p=>[...p, {role:"assistant", text}]); }
-  function appendUser(text: string){ setChat(p=>[...p, {role:"user", text}]); }
+  function addAssistant(text: string){ setChat(p=>[...p, {role:"assistant", text}]); }
+  function addUser(text: string){ setChat(p=>[...p, {role:"user", text}]); }
 
   async function uploadFile(e: React.ChangeEvent<HTMLInputElement>){
     const f = e.currentTarget.files?.[0]; if (!f) return;
@@ -41,14 +41,14 @@ export default function ProfileAI(){
       if (data?.text) {
         setResumeText(data.text);
         localStorage.setItem("m25:resume", data.text);
-        appendAssistant(`Parsed “${f.name}” (${data.kind?.toUpperCase() || "file"}) ✓`);
+        addAssistant(`Parsed “${f.name}” (${data.kind?.toUpperCase() || "file"}) ✓`);
         setUploading("ok");
       } else {
-        appendAssistant(data?.message || "Couldn’t read that file. Try PDF/DOCX/TXT or paste your text.");
+        addAssistant(data?.message || "Couldn’t read that file. Try PDF/DOCX/TXT or paste your text.");
         setUploading("err");
       }
     }catch{
-      appendAssistant("Upload failed — please try again.");
+      addAssistant("Upload failed — please try again.");
       setUploading("err");
     }
     e.currentTarget.value = "";
@@ -56,13 +56,13 @@ export default function ProfileAI(){
 
   async function start(){
     if (input.trim()) {
-      appendUser(input.trim());
+      addUser(input.trim());
       const newGoals = (goals ? goals+"\n" : "") + input.trim();
       setGoals(newGoals); localStorage.setItem("m25:goals", newGoals);
       setInput("");
     }
     if (!resumeText.trim() && !goals.trim()) {
-      appendAssistant("Please upload a resume or type a short goal so I can start.");
+      addAssistant("Please upload a resume or type a short goal so I can start.");
       return;
     }
     setReady(true);
@@ -79,13 +79,13 @@ export default function ProfileAI(){
       const data = await r.json();
       if (data?.done || !data?.question) {
         setDone(true);
-        appendAssistant("Thanks — drafting your weekly plan…");
+        addAssistant("Thanks — drafting your weekly plan…");
         await makePlan();
         return;
       }
-      appendAssistant(data.question);
+      addAssistant(data.question);
     }catch{
-      appendAssistant("(Connection issue — try again.)");
+      addAssistant("(Connection issue — try again.)");
     }
     setLoading(false); inputRef.current?.focus();
   }
@@ -93,12 +93,12 @@ export default function ProfileAI(){
   async function submit(){
     const v = input.trim(); if (!v) return;
     if (!ready){
-      appendUser(v);
+      addUser(v);
       const newGoals = (goals ? goals+"\n" : "") + v;
       setGoals(newGoals); localStorage.setItem("m25:goals", newGoals);
       setInput(""); return;
     }
-    appendUser(v);
+    addUser(v);
     const key = `q${Object.keys(state.answers).length+1}`;
     setState(prev=>({ answers:{ ...prev.answers, [key]: v }}));
     setInput(""); await askNext();
