@@ -1,7 +1,6 @@
 "use client";
 export const dynamic = 'force-dynamic';
 import { useEffect, useState } from "react";
-import StartTrial from "../components/StartTrial";
 
 type Task = { done:boolean; text:string };
 
@@ -38,7 +37,6 @@ export default function Dashboard(){
 
   return (
     <main>
-      <StartTrial />
       <h1 className="h2" style={{marginBottom:12}}>Your Weekly Plan</h1>
       <div className="card card-lg">
         {plan.length === 0 ? (

@@ -2,7 +2,6 @@
 export const dynamic = 'force-dynamic';
 import { useEffect, useState } from "react";
 import { isProUnlocked, trialStatus } from "../lib/trial";
-import StartTrial from "../components/StartTrial";
 
 export default function ProServices(){
   const [pro, setPro] = useState(false);
@@ -41,7 +40,6 @@ export default function ProServices(){
 
   return (
     <main>
-      <StartTrial />
       <h1 className="h2" style={{marginBottom:12}}>Pro Services</h1>
       <div className="grid-2">
         <Card title="ATS Resume Scan" desc="Upload resume, get ATS score & fixes." />

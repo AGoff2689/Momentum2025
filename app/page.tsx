@@ -1,3 +1,4 @@
+import StartTrial from "./components/StartTrial";
 export default function Welcome(){
   return (
     <main className="main">

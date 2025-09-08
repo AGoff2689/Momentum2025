@@ -1,3 +1,4 @@
+import StartTrial from "../components/StartTrial";
 "use client";
 import { useState } from "react";
 
