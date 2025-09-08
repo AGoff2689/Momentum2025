@@ -1,38 +1,68 @@
 "use client";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type Task = { done:boolean; text:string };
 
 export default function Dashboard(){
+  const [plan, setPlan] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(()=>{
+    try{
+      const p = localStorage.getItem("m25:plan");
+      if (p) setPlan(JSON.parse(p));
+    }catch{}
+  }, []);
+
+  useEffect(()=>{
+    try{ localStorage.setItem("m25:plan", JSON.stringify(plan)); }catch{}
+  }, [plan]);
+
+  function toggle(i:number){
+    setPlan(prev=>{ const c=[...prev]; c[i]={...c[i],done:!c[i].done}; return c; });
+  }
+
+  async function regenerate(){
+    setLoading(true);
+    try{
+      const profile = JSON.parse(localStorage.getItem("m25:profile") || "{}");
+      const r = await fetch("/api/coach", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ prompt: "Regenerate a weekly plan tailored to the profile.", profile })
+      });
+      const data = await r.json();
+      const tasks = (data?.plan || []).map((t:string)=>({done:false,text:t}));
+      setPlan(tasks);
+    }catch{}
+    setLoading(false);
+  }
+
   return (
     <main>
-      <h1 className="h2" style={{marginBottom:12}}>Dashboard</h1>
-      <div className="grid-2">
-        <div className="card card-lg">
-          <strong>Tasks This Week</strong>
-          <ul style={{lineHeight:1.9,marginTop:8,paddingLeft:18}}>
-            <li><input type="checkbox" /> Update resume bullets</li>
-            <li><input type="checkbox" /> Apply to 5 roles</li>
-            <li><input type="checkbox" /> 30 min interview practice</li>
+      <h1 className="h2" style={{marginBottom:12}}>Your Weekly Plan</h1>
+
+      <div className="card card-lg">
+        {plan.length === 0 ? (
+          <div className="subtle">No plan yet. <a className="btn btn-outline" href="/profile" style={{marginLeft:8}}>Create your profile</a></div>
+        ) : (
+          <ul style={{margin:"0 0 10px 16px", lineHeight:1.9}}>
+            {plan.map((t,i)=>(
+              <li key={i}>
+                <label style={{display:"flex",gap:8,alignItems:"center",cursor:"pointer"}}>
+                  <input type="checkbox" checked={t.done} onChange={()=>toggle(i)} />
+                  <span style={{textDecoration: t.done ? "line-through":"none"}}>{t.text}</span>
+                </label>
+              </li>
+            ))}
           </ul>
-        </div>
+        )}
 
-        <div className="card card-lg">
-          <strong>Progress</strong>
-          <div className="subtle" style={{margin:"8px 0"}}>Weekly completion</div>
-          <div style={{height:12,background:"#eef2f7",borderRadius:999}}>
-            <div style={{width:"45%",height:"100%",background:"var(--color-accent)",borderRadius:999}}/>
-          </div>
-        </div>
-
-        <div className="card card-lg">
-          <strong>Reminders</strong>
-          <div className="subtle" style={{marginTop:8}}>Calendar sync (Pro)</div>
-          <Link className="btn btn-outline" href="/pro#calendar">Connect calendar</Link>
-        </div>
-
-        <div className="card card-lg">
-          <strong>Career Insights</strong>
-          <div className="subtle" style={{marginTop:8}}>Top skills for your target role this month.</div>
-          <Link className="btn btn-outline" href="/pro#insights">Open insights</Link>
+        <div style={{display:"flex",gap:8,marginTop:10}}>
+          <button className="btn btn-primary" onClick={regenerate} disabled={loading}>
+            {loading ? "Generating…" : "Regenerate with AI"}
+          </button>
+          <a className="btn btn-outline" href="/pro">Explore Pro Services</a>
         </div>
       </div>
     </main>

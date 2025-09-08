@@ -1,144 +1,107 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
-type Q = { id:string, label:string, placeholder?:string };
-const QUESTIONS: Q[] = [
+type QA = { id: string; label: string; placeholder?: string };
+const QS: QA[] = [
   { id:"name", label:"What is your full name?" },
-  { id:"role", label:"What role are you targeting?" , placeholder:"e.g., Product Manager" },
-  { id:"industry", label:"Which industries interest you most?" , placeholder:"e.g., Fintech, SaaS" },
-  { id:"timeframe", label:"What is your target timeframe?" , placeholder:"e.g., 8 weeks" },
-  { id:"experience", label:"Years of experience?" , placeholder:"e.g., 5" },
-  { id:"skills", label:"Key skills (comma-separated)?" , placeholder:"SQL, Python, stakeholder mgmt" },
-  { id:"location", label:"Preferred location or remote?" , placeholder:"NYC, Remote" },
+  { id:"role", label:"What role are you targeting?", placeholder:"e.g., Product Manager" },
+  { id:"industry", label:"Which industries interest you?", placeholder:"e.g., Fintech, SaaS" },
+  { id:"timeframe", label:"Your target timeframe?", placeholder:"e.g., 8 weeks" },
+  { id:"experience", label:"Years of experience?", placeholder:"e.g., 5" },
+  { id:"skills", label:"Key skills (comma-separated)?", placeholder:"SQL, Python, stakeholder mgmt" },
+  { id:"location", label:"Preferred location or remote?", placeholder:"NYC, Remote" },
 ];
 
 export default function ProfilePage(){
+  const router = useRouter();
   const [answers, setAnswers] = useState<Record<string,string>>({});
-  const [i, setI] = useState(0);
-  const [input, setInput] = useState("");
-  const [chat, setChat] = useState<{ role:"user"|"assistant", text:string }[]>([]);
-  const [resumeName, setResumeName] = useState<string>("");
-  const box = useRef<HTMLInputElement>(null);
+  const [step, setStep] = useState(0);
+  const [val, setVal] = useState("");
+  const [chat, setChat] = useState<{role:"assistant"|"user", text:string}[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load any existing profile
-  useEffect(()=>{
-    try{
-      const saved = localStorage.getItem("m25:profile");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setAnswers(parsed);
-      }
-    }catch{}
+  useEffect(() => {
+    const saved = localStorage.getItem("m25:profile");
+    if (saved) setAnswers(JSON.parse(saved));
+    setChat([{role:"assistant", text:"Welcome! I’ll ask a few quick questions to tailor your plan."}]);
   }, []);
 
-  // Initialize chat
-  useEffect(()=>{
-    if (chat.length===0) {
-      setChat([{ role:"assistant", text:"Welcome! I’ll ask a few quick questions to tailor your plan." }]);
+  useEffect(()=>{ inputRef.current?.focus(); }, [step]);
+  useEffect(()=>{ localStorage.setItem("m25:profile", JSON.stringify(answers)); }, [answers]);
+
+  const q = QS[step];
+
+  async function next(){
+    const v = val.trim();
+    if (!q || !v) return;
+    setChat(prev=>[...prev, {role:"user", text:v}]);
+    setAnswers(prev=>({ ...prev, [q.id]: v }));
+    setVal("");
+
+    if (step < QS.length - 1) {
+      setStep(step+1);
+      setChat(prev=>[...prev, {role:"assistant", text: QS[step+1].label }]);
+      return;
     }
-  }, [chat.length]);
 
-  // Focus input
-  useEffect(()=>{ box.current?.focus(); }, [i]);
+    // Finished: generate plan then route
+    setChat(prev=>[...prev, {role:"assistant", text:"Great — generating your weekly plan…"}]);
 
-  // Persist on change
-  useEffect(()=>{ try{ localStorage.setItem("m25:profile", JSON.stringify(answers)); }catch{} }, [answers]);
-
-  const q = QUESTIONS[i];
-
-  function next(){
-    const val = input.trim();
-    if (!q || !val) return;
-    setChat(prev=>[...prev, {role:"user", text: val }]);
-    setAnswers(prev=>({ ...prev, [q.id]: val }));
-    setInput("");
-    if (i < QUESTIONS.length - 1) {
-      const nextQ = QUESTIONS[i+1];
-      setChat(prev=>[...prev, {role:"assistant", text: nextQ.label }]);
-      setI(i+1);
-    } else {
-      setChat(prev=>[...prev, {role:"assistant", text:"Thanks! I’ll use this to draft a weekly plan. You can refine it with the AI any time."}]);
-    }
-  }
-
-  async function generatePlan(){
-    const prompt =
-      `Create a weekly plan for a ${answers.role || "professional"} in ${answers.industry || "their industry"} targeting ${answers.timeframe || "4-8 weeks"}.`;
     try{
-      const r = await fetch("/api/coach", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ prompt, profile: answers }) });
+      const r = await fetch("/api/coach", {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ prompt: "Create a weekly plan tailored to the above profile.", profile: { ...answers, [q.id]: v } })
+      });
       const data = await r.json();
-      setChat(prev=>[...prev, {role:"assistant", text: data?.reply || "Plan ready." }]);
-      // store plan for dashboard/assistant
-      if (Array.isArray(data?.plan)) {
-        localStorage.setItem("m25:plan", JSON.stringify(data.plan.map((t:string)=>({done:false,text:t}))));
-      }
-      alert("Plan created! Check the AI bubble or Dashboard.");
+      const plan = Array.isArray(data?.plan) ? data.plan : [];
+      localStorage.setItem("m25:plan", JSON.stringify(plan.map((t:string)=>({done:false,text:t}))));
+      router.push("/dashboard");
     }catch{
-      alert("Could not generate plan — try again.");
+      router.push("/dashboard");
     }
   }
 
-  function onUpload(e: React.ChangeEvent<HTMLInputElement>){
+  function upload(e: React.ChangeEvent<HTMLInputElement>){
     const f = e.currentTarget.files?.[0];
     if (!f) return;
-    setResumeName(f.name);
-    // Parsing is a stub here; a real parser can be added later.
-    setChat(prev=>[...prev, {role:"assistant", text:`Uploaded “${f.name}”. I’ll scan it and incorporate skills and experience.`}]);
+    setChat(prev=>[...prev, {role:"assistant", text:`Uploaded “${f.name}”. I’ll learn from it next.`}]);
   }
 
   return (
     <main className="container" style={{ maxWidth:900 }}>
       <h1 className="h2" style={{ marginBottom: 10 }}>Profile</h1>
-
       <section className="card card-lg" style={{marginBottom:12}}>
-        <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8}}>
-          <div className="badge">Personalized Onboarding</div>
-          {resumeName && <div className="badge">Resume: {resumeName}</div>}
-        </div>
-
-        {/* Chat bubbles */}
         <div style={{maxHeight:380,overflow:"auto",padding:4,marginBottom:10}}>
-          {chat.map((m,idx)=>(
-            <div key={idx} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",marginBottom:8}}>
+          {chat.map((m,i)=>(
+            <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",marginBottom:8}}>
               <div style={{
                 background:m.role==="user"?"#eff3f9":"#f6fbf9",
-                border:"1px solid #e6edf7",
-                padding:"10px 12px",borderRadius:12,maxWidth:520
-              }}>
-                {m.text}
-              </div>
+                border:"1px solid #e6edf7", padding:"10px 12px", borderRadius:12, maxWidth:520
+              }}>{m.text}</div>
             </div>
           ))}
         </div>
 
-        {/* Current question */}
         {q && (
           <div style={{display:"grid",gap:8}}>
             <label className="label">{q.label}</label>
             <input
-              ref={box}
+              ref={inputRef}
               className="input"
               placeholder={q.placeholder || ""}
-              value={input}
-              onChange={e=>setInput(e.target.value)}
+              value={val}
+              onChange={e=>setVal(e.target.value)}
               onKeyDown={e=>{ if(e.key==="Enter") next(); }}
             />
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               <button className="btn btn-primary" onClick={next}>Next</button>
               <label className="btn btn-outline">
                 Upload Resume
-                <input type="file" accept=".pdf,.doc,.docx" onChange={onUpload} style={{display:"none"}} />
+                <input type="file" accept=".pdf,.doc,.docx" onChange={upload} style={{display:"none"}} />
               </label>
               <a className="btn btn-outline" href="/dashboard">Skip to Dashboard</a>
             </div>
-          </div>
-        )}
-
-        {/* If done, offer plan generation */}
-        {!q && (
-          <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-            <button className="btn btn-primary" onClick={generatePlan}>Generate Plan</button>
-            <a className="btn btn-outline" href="/dashboard">Go to Dashboard</a>
           </div>
         )}
       </section>
