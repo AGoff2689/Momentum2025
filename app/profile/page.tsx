@@ -4,10 +4,11 @@ import { useRouter } from "next/navigation";
 import StartTrial from "../components/StartTrial";
 
 type QAState = { answers: Record<string,string> };
+type ChatMsg = { role: "assistant" | "user"; text: string };
 
 export default function ProfileAI(){
   const router = useRouter();
-  const [chat, setChat] = useState<{role:"assistant"|"user", text:string}[]>([]);
+  const [chat, setChat] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [resumeText, setResumeText] = useState("");
   const [goals, setGoals] = useState("");
@@ -15,6 +16,7 @@ export default function ProfileAI(){
   const [ready, setReady] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState<null | "pending" | "ok" | "err">(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(()=>{
@@ -27,33 +29,41 @@ export default function ProfileAI(){
   },[]);
   useEffect(()=>{ localStorage.setItem("m25:profile", JSON.stringify(state)); },[state]);
 
+  function appendAssistant(text: string){ setChat(p=>[...p, {role:"assistant", text}]); }
+  function appendUser(text: string){ setChat(p=>[...p, {role:"user", text}]); }
+
   async function uploadFile(e: React.ChangeEvent<HTMLInputElement>){
     const f = e.currentTarget.files?.[0]; if (!f) return;
     const body = new FormData(); body.set("file", f);
-    setLoading(true);
+    setUploading("pending");
     try{
       const r = await fetch("/api/parse-resume", { method:"POST", body });
       const data = await r.json();
       if (data?.text) {
         setResumeText(data.text);
         localStorage.setItem("m25:resume", data.text);
-        setChat(p=>[...p, {role:"assistant", text:`Loaded “${f.name}”. I’ll use it to tailor questions.`}]);
+        appendAssistant(`Parsed “${f.name}” (${data.kind?.toUpperCase() || "file"}) ✓`);
+        setUploading("ok");
       } else {
-        setChat(p=>[...p, {role:"assistant", text:"Couldn’t read that file type. Try PDF, DOCX, or TXT."}]);
+        appendAssistant(data?.message || "Couldn’t read that file. Try PDF/DOCX/TXT or paste your text.");
+        setUploading("err");
       }
-    }catch{ setChat(p=>[...p, {role:"assistant", text:"Upload failed — try again."}]); }
-    setLoading(false); e.currentTarget.value = "";
+    }catch{
+      appendAssistant("Upload failed — please try again.");
+      setUploading("err");
+    }
+    e.currentTarget.value = "";
   }
 
   async function start(){
     if (input.trim()) {
-      setChat(p=>[...p, {role:"user", text:input.trim()}]);
+      appendUser(input.trim());
       const newGoals = (goals ? goals+"\n" : "") + input.trim();
       setGoals(newGoals); localStorage.setItem("m25:goals", newGoals);
       setInput("");
     }
     if (!resumeText.trim() && !goals.trim()) {
-      setChat(p=>[...p, {role:"assistant", text:"Please upload a resume or type a short goal so I can start."}]);
+      appendAssistant("Please upload a resume or type a short goal so I can start.");
       return;
     }
     setReady(true);
@@ -70,13 +80,13 @@ export default function ProfileAI(){
       const data = await r.json();
       if (data?.done || !data?.question) {
         setDone(true);
-        setChat(p=>[...p, {role:"assistant", text:"Thanks — drafting your weekly plan…"}]);
+        appendAssistant("Thanks — drafting your weekly plan…");
         await makePlan();
         return;
       }
-      setChat(p=>[...p, {role:"assistant", text:data.question}]);
+      appendAssistant(data.question);
     }catch{
-      setChat(p=>[...p, {role:"assistant", text:"(Connection issue — try again.)"}]);
+      appendAssistant("(Connection issue — try again.)");
     }
     setLoading(false); inputRef.current?.focus();
   }
@@ -84,12 +94,12 @@ export default function ProfileAI(){
   async function submit(){
     const v = input.trim(); if (!v) return;
     if (!ready){
-      setChat(p=>[...p, {role:"user", text:v}]);
+      appendUser(v);
       const newGoals = (goals ? goals+"\n" : "") + v;
       setGoals(newGoals); localStorage.setItem("m25:goals", newGoals);
       setInput(""); return;
     }
-    setChat(p=>[...p, {role:"user", text:v}]);
+    appendUser(v);
     const key = `q${Object.keys(state.answers).length+1}`;
     setState(prev=>({ answers:{ ...prev.answers, [key]: v }}));
     setInput(""); await askNext();
@@ -106,7 +116,7 @@ export default function ProfileAI(){
         localStorage.setItem("m25:plan", JSON.stringify(data.plan.map((t:string)=>({done:false,text:t}))));
       }
     }catch{}
-    setTimeout(()=>router.push("/dashboard"), 400);
+    setTimeout(()=>router.push("/dashboard"), 500);
   }
 
   return (
@@ -125,7 +135,7 @@ export default function ProfileAI(){
             style={{ flex:1, minWidth:260 }}
           />
           <label className="btn btn-outline">
-            {loading ? "Uploading…" : "Upload Resume"}
+            {uploading==="pending" ? "Uploading…" : uploading==="ok" ? "Parsed ✓" : uploading==="err" ? "Try Again" : "Upload Resume"}
             <input type="file" accept=".pdf,.docx,.txt" onChange={uploadFile} style={{ display:"none" }} />
           </label>
           {!ready
