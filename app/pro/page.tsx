@@ -25,14 +25,14 @@ export default function ProServices(){
       {daysLeft !== null && <span className="badge" style={{marginLeft:8}}>Trial: {daysLeft} day{daysLeft===1?"":"s"} left</span>}
       <div className="subtle" style={{marginTop:6}}>{desc}</div>
       <div style={{ marginTop: 10 }}>
-        <button className="btn btn-outline" onClick={()=>alert(`${title} (coming soon)`)} disabled={locked}>Open</button>
+        <button className="btn btn-outline" (coming soon)`)} disabled={locked}>Open</button>
       </div>
       {locked && (
         <div style={{
           position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center",
           background:"rgba(255,255,255,.6)", borderRadius:14
         }}>
-          <button className="btn btn-primary" onClick={upgrade}>Upgrade to Pro</button>
+          <button className="btn btn-primary">Upgrade to Pro</button>
         </div>
       )}
     </div>

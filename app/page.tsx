@@ -1,7 +1,9 @@
+"use client";
 import StartTrial from "./components/StartTrial";
 export default function Welcome(){
   return (
-    <main className="main">
+    <StartTrial/>
+<main className="main">
       <div className="container">
         <section className="hero">
           <h1 className="h1">Advance your career with AI-powered coaching.</h1>

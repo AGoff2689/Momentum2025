@@ -1,4 +1,14 @@
 "use client";
 import { useEffect } from "react";
-import { startTrialIfNeeded } from "../lib/trial";
-export default function StartTrial(){ useEffect(()=>{ startTrialIfNeeded(); },[]); return null; }
+
+export default function StartTrial() {
+  useEffect(() => {
+    try {
+      const k = "m25:trial:start";
+      if (!localStorage.getItem(k)) {
+        localStorage.setItem(k, String(Date.now()));
+      }
+    } catch {}
+  }, []);
+  return null;
+}

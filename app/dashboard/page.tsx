@@ -54,7 +54,7 @@ export default function Dashboard(){
           </ul>
         )}
         <div style={{display:"flex",gap:8,marginTop:10}}>
-          <button className="btn btn-primary" onClick={regenerate} disabled={loading}>{loading?"Generating…":"Regenerate with Moe"}</button>
+          <button className="btn btn-primary" disabled={loading}>{loading?"Generating…":"Regenerate with Moe"}</button>
           <a className="btn btn-outline" href="/pro">Explore Pro Services</a>
         </div>
       </div>

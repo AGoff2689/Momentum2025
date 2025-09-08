@@ -137,8 +137,8 @@ export default function ProfileAI(){
             <input type="file" accept=".pdf,.docx,.txt" onChange={uploadFile} style={{ display:"none" }} />
           </label>
           {!ready
-            ? <button className="btn btn-primary" onClick={start}>Start</button>
-            : <button className="btn btn-primary" onClick={submit} disabled={loading}>Send</button>}
+            ? <button className="btn btn-primary">Start</button>
+            : <button className="btn btn-primary" disabled={loading}>Send</button>}
         </div>
 
         <div style={{ maxHeight: 420, overflow: "auto", padding: 4 }}>

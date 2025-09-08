@@ -48,7 +48,7 @@ export default function PricingPage() {
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <a className="btn btn-outline" href="/free">Keep Free</a>
-          <button className="btn btn-primary" onClick={startTrial} disabled={busy}>
+          <button className="btn btn-primary" disabled={busy}>
             {busy ? "Starting…" : "Start 3-day Pro Trial"}
           </button>
         </div>
@@ -70,7 +70,7 @@ export default function PricingPage() {
             <li>Portfolio/case prompts</li>
             <li>Priority updates</li>
           </ul>
-          <button className="btn btn-primary" onClick={startTrial} disabled={busy} style={{ marginTop: 12 }}>
+          <button className="btn btn-primary" disabled={busy} style={{ marginTop: 12 }}>
             {busy ? "Starting…" : "Start 3-day trial"}
           </button>
           <div className="subtle" style={{ marginTop: 8 }}>No charge if you cancel during the trial. Taxes at checkout.</div>

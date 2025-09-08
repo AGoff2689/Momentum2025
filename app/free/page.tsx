@@ -30,7 +30,8 @@ export default function FreeTools() {
   };
 
   return (
-    <main className="container" style={{ paddingTop: 16 }}>
+    <StartTrial/>
+<main className="container" style={{ paddingTop: 16 }}>
       <h1 className="h2" style={{ marginBottom: 16 }}>Free Career Tools</h1>
 
       <section style={{ display: "grid", gap: 16, gridTemplateColumns: "1fr 1fr" }}>
@@ -42,7 +43,7 @@ export default function FreeTools() {
           <textarea className="textarea" style={{ minHeight: 96 }}
                     placeholder="e.g., land a PM interview"
                     value={goal} onChange={(e) => setGoal(e.target.value)} />
-          <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={makePlan}>
+          <button className="btn btn-primary" style={{ marginTop: 12 }}>
             Generate Plan
           </button>
 
@@ -62,7 +63,7 @@ export default function FreeTools() {
           <textarea className="textarea" style={{ minHeight: 96 }}
                     placeholder="e.g., Ran stand-ups and sprint planning"
                     value={task} onChange={(e) => setTask(e.target.value)} />
-          <button className="btn btn-outline" style={{ marginTop: 12 }} onClick={makeBullet}>
+          <button className="btn btn-outline" style={{ marginTop: 12 }}>
             Suggest Bullet
           </button>
 

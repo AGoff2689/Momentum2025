@@ -46,10 +46,10 @@ export default function Coach() {
         <strong>AI Career Coach</strong>
         <div className="subtle">Ask for a plan, resume bullets, interview prep, networking messages, and job search strategy.</div>
         <div style={{display:"flex",flexWrap:"wrap",gap:8, marginTop:8}}>
-          <button className="btn btn-outline" onClick={quick("Create a 7-day plan to land a data analyst role.")}>7-day Plan</button>
-          <button className="btn btn-outline" onClick={quick("Turn this task into resume bullets: led sprint planning and retros")}>Resume Bullet</button>
-          <button className="btn btn-outline" onClick={quick("Mock interview questions for a PM role with STAR answers")}>Interview</button>
-          <button className="btn btn-outline" onClick={quick("Write a concise networking DM to a hiring manager")}>Networking DM</button>
+          <button className="btn btn-outline">7-day Plan</button>
+          <button className="btn btn-outline">Resume Bullet</button>
+          <button className="btn btn-outline">Interview</button>
+          <button className="btn btn-outline">Networking DM</button>
         </div>
       </div>
 
@@ -74,7 +74,7 @@ export default function Coach() {
       <div style={{ display:"flex", gap:8 }}>
         <input className="input" style={{ flex:1 }} placeholder="Ask the coach anything…" value={input}
           onChange={e=>setInput(e.target.value)} onKeyDown={e=>{ if(e.key==="Enter") send(); }} />
-        <button className="btn btn-primary" onClick={send} disabled={busy}>Send</button>
+        <button className="btn btn-primary" disabled={busy}>Send</button>
       </div>
     </main>
   );
